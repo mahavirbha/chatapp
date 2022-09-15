@@ -16,42 +16,49 @@ const users = [
     email: "suresh@sureshkumar.com",
     password: "12346",
   },
-]
+];
 
 const Todos = [
-    {title:""}
-]
+  { title: "buy book", by: "sfdghj" },
+  { title: "write code", by: "dfsghj" },
+  { title: "record video", by: "4a44045e-837b-4a5d-ae8e-076147691da2" },
+];
 
 const typeDefs = gql`
-    type Query{
-        users:[User]
-        user(id:ID!):User
-    }
+  type Query {
+    users: [User]
+    user(id: ID!): User
+  }
 
-    input UserInput{
-        firstName:String!
-        lastName:String!
-        email:String!
-        password:String!
-    }
+  input UserInput {
+    firstName: String!
+    lastName: String!
+    email: String!
+    password: String!
+  }
 
-    type Mutation{
-        createUser(userNew:UserInput!):User
-    }
+  type Mutation {
+    createUser(userNew: UserInput!): User
+  }
 
-    type User{
-        id:ID
-        firstName:String
-        lastName:String
-        email:String
-    }
+  type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    email: String!
+    todos:[Todo]
+  }
 
+  type Todo{
+    title:String!
+    by:ID!
+  }
 `;
 
 const resolvers = {
   Query: {
     users: () => users,
-    user: (_, {id}) => {
+    user: (_, { id }) => {
       console.log(id);
       return users.find((item) => item.id == id);
     },
@@ -62,7 +69,7 @@ const resolvers = {
         id: crypto.randomUUID(),
         ...userNew,
       };
-      console.log("new uuid: ", newUser.id)
+      console.log("new uuid: ", newUser.id);
       users.push(newUser);
       return newUser;
     },
@@ -72,4 +79,5 @@ const resolvers = {
 const server = new ApolloServer({ typeDefs, resolvers });
 
 server.listen().then(({ url }) => {
-  console.log(` Server ready at ${
+  console.log(` Server ready at ${url}`);
+});
