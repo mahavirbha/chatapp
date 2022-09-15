@@ -21,7 +21,6 @@ const users = [
 const Todos = [
   { title: "buy book", by: "sfdghj" },
   { title: "write code", by: "dfsghj" },
-  { title: "record video", by: "4a44045e-837b-4a5d-ae8e-076147691da2" },
 ];
 
 const typeDefs = gql`
@@ -46,21 +45,28 @@ const typeDefs = gql`
     firstName: String!
     lastName: String!
     email: String!
-    todos:[Todo]
+    todos: [Todo]
   }
 
-  type Todo{
-    title:String!
-    by:ID!
+  type Todo {
+    title: String!
+    by: ID!
   }
 `;
 
 const resolvers = {
   Query: {
     users: () => users,
-    user: (_, { id }) => {
-      console.log(id);
+    user: (_, { id }, { userLoggedIn }) => {
+      console.log(id, userLoggedIn);
+      if(!userLoggedIn) throw new Error("you are not logged in")
       return users.find((item) => item.id == id);
+    },
+  },
+  User: {
+    todos: (parent) => {
+      console.log(parent);
+      return Todos.filter((todo) => todo.by == parent.id);
     },
   },
   Mutation: {
@@ -76,7 +82,13 @@ const resolvers = {
   },
 };
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: {
+    userLoggedIn: true,
+  },
+});
 
 server.listen().then(({ url }) => {
   console.log(` Server ready at ${url}`);
