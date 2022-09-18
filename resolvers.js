@@ -20,6 +20,22 @@ const resolvers = {
       });
       return users;
     },
+
+    messageByUser: async (_, { receiverId }, { userId }) => {
+      if (!userId) throw new ForbiddenError("You must be signed-in");
+      const messages = await prisma.message.findMany({
+        where: {
+          OR: [
+            { senderId: userId, receiverId: receiverId },
+            { senderId: receiverId, receiverId: userId },
+          ],
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+      });
+      return messages;
+    },
   },
 
   Mutation: {
@@ -64,8 +80,8 @@ const resolvers = {
       if (!userId) throw new ForbiddenError("You must be signed-in");
       const message1 = await prisma.message.create({
         data: {
-          text:text,
-          receiverId:receiverId,
+          text: text,
+          receiverId: receiverId,
           senderId: userId,
         },
       });
