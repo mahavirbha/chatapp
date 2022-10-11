@@ -9,6 +9,7 @@ import {
 import { height } from "@mui/system";
 import React from "react";
 import { useParams } from "react-router-dom";
+import MessageCard from "./MessageCard";
 
 function ChatScreen() {
   const { id, name } = useParams();
@@ -23,8 +24,25 @@ function ChatScreen() {
           <Typography variant="h6">{name}</Typography>
         </Toolbar>
       </AppBar>
-      <Box sx={{ backgroundColor: "#f5f5f5", height: "80vh" }}>hi</Box>
-      <TextField placeholder="Enter a message" variant="standard" fullWidth multiline rows={2} />
+      <Box
+        sx={{
+          backgroundColor: "#f5f5f5",
+          height: "80vh",
+          padding: "10px",
+          overflowY: "auto",
+        }}
+      >
+        <MessageCard text="Hi Mahavirbha" date="12345" direction="start" />
+        <MessageCard text="Hi Mahavirbha" date="12345" direction="end" />
+        <MessageCard text="Hi Mahavirbha" date="12345" direction="end" />
+      </Box>
+      <TextField
+        placeholder="Enter a message"
+        variant="standard"
+        fullWidth
+        multiline
+        rows={2}
+      />
     </Box>
   );
 }
