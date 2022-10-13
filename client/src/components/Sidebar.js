@@ -3,12 +3,18 @@ import React from "react";
 import UserCard from "./UserCard";
 import LogoutIcon from '@mui/icons-material/Logout';
 
-function Sidebar() {
+function Sidebar({setLoggedIn}) {
   const users = [
     { id: 1, firstName: "Mahavirsinh", lastName: "Chauhan" },
     { id: 2, firstName: "Parth", lastName: "Bhavsar" },
     { id: 3, firstName: "Divyesh", lastName: "Varu" },
   ];
+
+  function handleLogout() {
+    console.log("handleLogout")
+    localStorage.removeItem('jwt')
+    setLoggedIn(false)
+  }
 
   return (
     <Box
@@ -22,7 +28,7 @@ function Sidebar() {
       <Stack direction='row' sx={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
 
       <Typography variant="h6">Chat</Typography>
-      <LogoutIcon/>
+      <LogoutIcon onClick={() => handleLogout()}/>
       </Stack>
       <Divider />
       {users.map((item, index) => {

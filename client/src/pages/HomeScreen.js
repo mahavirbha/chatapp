@@ -14,10 +14,10 @@ const AllRoutes = () => {
     )
 }
 
-function HomeScreen() {
+function HomeScreen({setLoggedIn}) {
   return (
     <Box sx={{display:"flex"}}>
-        <Sidebar/>
+        <Sidebar setLoggedIn={setLoggedIn} />
         <AllRoutes/>
     </Box>
   )
