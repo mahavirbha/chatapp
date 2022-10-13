@@ -20,7 +20,7 @@ function MessageCard({ text, date, direction }) {
             px: "4px",
           }}
         >
-          {date}
+          {new Date(date).toLocaleTimeString('en-US')}
         </Typography>
       </Box>
     </Box>
