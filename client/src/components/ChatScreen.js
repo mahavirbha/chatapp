@@ -1,27 +1,39 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   AppBar,
   Avatar,
   Box,
+  Stack,
   TextField,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { height } from "@mui/system";
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { GET_MSG } from "../graphql/queries";
 import MessageCard from "./MessageCard";
+import SendIcon from "@mui/icons-material/Send";
+import { SEND_MSG } from "../graphql/mutations";
 
 function ChatScreen() {
   const { id, name } = useParams();
+  const [text, setText] = useState("");
+  const [messages, setMessages] = useState([]);
   const { data, loading, error } = useQuery(GET_MSG, {
     variables: {
       receiverId: +id,
     },
+    onCompleted(data) {
+      setMessages(data.messageByUser);
+    },
   });
 
-  console.log("Messages:", data);
+  const [sendMessage] = useMutation(SEND_MSG, {
+    onCompleted(data) {
+      setMessages((prevMessages) => [...prevMessages, data.createMessage]);
+    },
+  });
 
   return (
     <Box flexGrow={1}>
@@ -45,21 +57,40 @@ function ChatScreen() {
         {loading ? (
           <Typography variant="h6">loading chats</Typography>
         ) : (
-          data.messageByUser.map(msg=>{
-            return <MessageCard key={msg.createdAt} text={msg.text} date={msg.createdAt} direction={msg.receiverId == +id ? "end" : "start" } />
+          messages.map((msg) => {
+            return (
+              <MessageCard
+                key={msg.createdAt}
+                text={msg.text}
+                date={msg.createdAt}
+                direction={msg.receiverId == +id ? "end" : "start"}
+              />
+            );
           })
         )}
-        {/* <MessageCard text="Hi Mahavirbha" date="12345" direction="start" />
-        <MessageCard text="Hi Mahavirbha" date="12345" direction="end" />
-        <MessageCard text="Hi Mahavirbha" date="12345" direction="end" /> */}
       </Box>
-      <TextField
-        placeholder="Enter a message"
-        variant="standard"
-        fullWidth
-        multiline
-        rows={2}
-      />
+      <Stack direction="row">
+        <TextField
+          placeholder="Enter a message"
+          variant="standard"
+          fullWidth
+          multiline
+          rows={2}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+        <SendIcon
+          onClick={() =>
+            sendMessage({
+              variables: {
+                receiverId: +id,
+                text: text,
+              },
+            })
+          }
+          fontSize="large"
+        />
+      </Stack>
     </Box>
   );
 }
